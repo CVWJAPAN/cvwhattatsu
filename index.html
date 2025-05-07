@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>発達支援AIツール</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #fff; color: #000; }
+    h1 { color: #007acc; }
+    .question { margin: 10px 0; }
+    .result { border: 2px solid #007acc; padding: 15px; margin-top: 20px; }
+    button { background: #007acc; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>発達支援チェックAI</h1>
+  <p>子どもの行動に気になる点がある場合にご利用ください。※匿名・記録されません。</p>
+
+  <form id="devForm">
+    <div class="question"><strong>A：社会性・対人関係</strong></div>
+    <label><input type="checkbox"> 他者と目を合わせにくい</label><br>
+    <label><input type="checkbox"> 友達と遊べない／トラブルが多い</label><br>
+    <label><input type="checkbox"> 感情共有が苦手（例：一緒に喜べない）</label><br>
+    <label><input type="checkbox"> 集団行動を極端に嫌がる</label><br>
+    <label><input type="checkbox"> 雰囲気や空気を読めない</label><br>
+
+    <div class="question"><strong>B：コミュニケーション</strong></div>
+    <label><input type="checkbox"> 会話が一方的・かみ合わない</label><br>
+    <label><input type="checkbox"> 比喩・冗談が通じない</label><br>
+    <label><input type="checkbox"> オウム返しのような発話が多い</label><br>
+    <label><input type="checkbox"> 質問に適切に答えられない</label><br>
+    <label><input type="checkbox"> 話し始めのきっかけが分からない</label><br>
+
+    <div class="question"><strong>C：行動・こだわり・感覚</strong></div>
+    <label><input type="checkbox"> 特定の行動・順序にこだわる</label><br>
+    <label><input type="checkbox"> 同じ遊び・行動を繰り返す</label><br>
+    <label><input type="checkbox"> 感覚過敏（音・光など）や鈍感</label><br>
+    <label><input type="checkbox"> 新しいことへの不安が強い</label><br>
+    <label><input type="checkbox"> 予測外のことにパニックを起こす</label><br>
+
+    <div class="question"><strong>D：注意・多動・衝動</strong></div>
+    <label><input type="checkbox"> 注意が持続せず、すぐ気が散る</label><br>
+    <label><input type="checkbox"> 指示を聞いてもすぐに行動できない</label><br>
+    <label><input type="checkbox"> 落ち着きがなく、動き回る</label><br>
+    <label><input type="checkbox"> 衝動的に話す・行動する</label><br>
+    <label><input type="checkbox"> 順番や待つことが苦手</label><br>
+
+    <div class="question"><strong>E：日常生活・自立</strong></div>
+    <label><input type="checkbox"> 着替え・食事・排泄の自立が難しい</label><br>
+    <label><input type="checkbox"> 手順やルールの理解が弱い</label><br>
+    <label><input type="checkbox"> 生活リズムが乱れている</label><br>
+    <label><input type="checkbox"> 名前を呼んでも反応しないことがある</label><br>
+    <label><input type="checkbox"> 学校・園での集団生活が困難</label><br>
+
+    <button type="button" onclick="analyze()">結果を表示</button>
+  </form>
+
+  <div id="result" class="result" style="display:none;"></div>
+
+  <script>
+    function analyze() {
+      const checks = document.querySelectorAll('input[type="checkbox"]');
+      let score = 0;
+      checks.forEach(c => { if (c.checked) score++; });
+
+      const result = document.getElementById("result");
+      result.style.display = "block";
+
+      if (score >= 20) {
+        result.innerHTML = "<strong>【高い特性傾向】</strong><br>発達支援・専門機関との連携が強く推奨されます。<br><br><u>支援提案</u><br>・児童発達支援・通級・専門医療の受診<br>・構造化支援、視覚的支援<br>・個別支援計画（IEP）作成";
+      } else if (score >= 13) {
+        result.innerHTML = "<strong>【中程度の傾向】</strong><br>日常での困りごとが多く、支援が必要です。<br><br><u>支援提案</u><br>・環境調整、スモールステップ支援<br>・支援級や通級の検討<br>・保健室・個別対応活用";
+      } else if (score >= 6) {
+        result.innerHTML = "<strong>【軽度の傾向】</strong><br>一部に困りごとが見られます。<br><br><u>支援提案</u><br>・共感的対応と見通しの提供<br>・安心できる人との関係づくり<br>・家庭・園での柔軟な支援";
+      } else {
+        result.innerHTML = "<strong>【特性傾向は低い】</strong><br>今のところ大きな特性傾向は見られません。<br><br>気になることがあれば、今後も見守りや相談をおすすめします。";
+      }
+    }
+  </script>
+</body>
+</html>
