@@ -1,81 +1,277 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>発達支援AIツール</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body { font-family: sans-serif; padding: 20px; background: #fff; color: #000; }
-    h1 { color: #007acc; }
-    .question { margin: 10px 0; }
-    .result { border: 2px solid #007acc; padding: 15px; margin-top: 20px; }
-    button { background: #007acc; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHAGAと一緒にメンタルケア</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f0f8ff;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #4a90e2;
+            font-size: 2.5em;
+        }
+        .chaga {
+            font-weight: bold;
+            color: #ff6f61;
+            font-size: 1.2em;
+        }
+        .section {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 12px 25px;
+            margin: 5px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        input[type="radio"], input[type="checkbox"] {
+            margin: 0 10px;
+        }
+        #result, #relax, #chat, #diary, #progress {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #333;
+        }
+        audio {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 10px;
+        }
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            height: 100px;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        canvas {
+            max-width: 600px;
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <h1>発達支援チェックAI</h1>
-  <p>子どもの行動に気になる点がある場合にご利用ください。※匿名・記録されません。</p>
+    <h1>CHAGAと一緒にメンタルケア</h1>
+    <p class="chaga">CHAGA: こんにちは！心を優しくケアしようね！</p>
 
-  <form id="devForm">
-    <div class="question"><strong>A：社会性・対人関係</strong></div>
-    <label><input type="checkbox"> 他者と目を合わせにくい</label><br>
-    <label><input type="checkbox"> 友達と遊べない／トラブルが多い</label><br>
-    <label><input type="checkbox"> 感情共有が苦手（例：一緒に喜べない）</label><br>
-    <label><input type="checkbox"> 集団行動を極端に嫌がる</label><br>
-    <label><input type="checkbox"> 雰囲気や空気を読めない</label><br>
+    <div class="section">
+        <h2>1. 気持ちチェック</h2>
+        <p>あなたの心の状態を詳しくチェックしよう！</p>
+        <form id="moodForm">
+            <p>1. 今日、笑顔になれた？<br>
+                <input type="radio" name="q1" value="2"> はい
+                <input type="radio" name="q1" value="1"> 少し
+                <input type="radio" name="q1" value="0"> いいえ</p>
+            <p>2. イライラした？<br>
+                <input type="radio" name="q2" value="0"> はい
+                <input type="radio" name="q2" value="1"> 少し
+                <input type="radio" name="q2" value="2"> いいえ</p>
+            <p>3. よく眠れた？<br>
+                <input type="radio" name="q3" value="2"> はい
+                <input type="radio" name="q3" value="1"> 少し
+                <input type="radio" name="q3" value="0"> いいえ</p>
+            <p>4. 過去1週間のストレス要因（複数選択可）:<br>
+                <input type="checkbox" name="stress" value="work"> 仕事/家事
+                <input type="checkbox" name="stress" value="child"> 子育て
+                <input type="checkbox" name="stress" value="money"> お金</p>
+            <button type="button" onclick="checkMood()">チェックする</button>
+        </form>
+        <canvas id="moodChart" width="600" height="300"></canvas>
+        <div id="result"></div>
+    </div>
 
-    <div class="question"><strong>B：コミュニケーション</strong></div>
-    <label><input type="checkbox"> 会話が一方的・かみ合わない</label><br>
-    <label><input type="checkbox"> 比喩・冗談が通じない</label><br>
-    <label><input type="checkbox"> オウム返しのような発話が多い</label><br>
-    <label><input type="checkbox"> 質問に適切に答えられない</label><br>
-    <label><input type="checkbox"> 話し始めのきっかけが分からない</label><br>
+    <div class="section">
+        <h2>2. リラクゼーションガイド</h2>
+        <p>CHAGAと一緒に心を落ち着けよう！進捗を記録できるよ！</p>
+        <button onclick="playRelax('deep')">深呼吸（5分）</button>
+        <button onclick="playRelax('muscle')">筋弛緩（3分）</button>
+        <audio id="relaxAudio" src="" controls class="hidden"></audio>
+        <div id="relax"></div>
+        <button onclick="logRelax()" class="hidden" id="logButton">進捗を記録</button>
+    </div>
 
-    <div class="question"><strong>C：行動・こだわり・感覚</strong></div>
-    <label><input type="checkbox"> 特定の行動・順序にこだわる</label><br>
-    <label><input type="checkbox"> 同じ遊び・行動を繰り返す</label><br>
-    <label><input type="checkbox"> 感覚過敏（音・光など）や鈍感</label><br>
-    <label><input type="checkbox"> 新しいことへの不安が強い</label><br>
-    <label><input type="checkbox"> 予測外のことにパニックを起こす</label><br>
+    <div class="section">
+        <h2>3. 匿名相談</h2>
+        <p>悩みをCHAGAに匿名で話してね。ボランティアが24時間以内に返信！</p>
+        <textarea id="chatInput" placeholder="ここに悩みを書いてね（ニックネーム可）"></textarea>
+        <button onclick="sendChat()">送る</button>
+        <div id="chat"></div>
+    </div>
 
-    <div class="question"><strong>D：注意・多動・衝動</strong></div>
-    <label><input type="checkbox"> 注意が持続せず、すぐ気が散る</label><br>
-    <label><input type="checkbox"> 指示を聞いてもすぐに行動できない</label><br>
-    <label><input type="checkbox"> 落ち着きがなく、動き回る</label><br>
-    <label><input type="checkbox"> 衝動的に話す・行動する</label><br>
-    <label><input type="checkbox"> 順番や待つことが苦手</label><br>
+    <div class="section">
+        <h2>4. 3行日記</h2>
+        <p>今日の気持ちを3行で記録して、PDFやグラフで確認！</p>
+        <textarea id="diaryInput" placeholder="1. 良かったこと\n2. 大変だったこと\n3. 明日したいこと"></textarea>
+        <button onclick="saveDiary()">保存してPDFを作る</button>
+        <button onclick="showDiaryGraph()">日記をグラフ化</button>
+        <canvas id="diaryChart" width="600" height="300" class="hidden"></canvas>
+        <div id="diary"></div>
+    </div>
 
-    <div class="question"><strong>E：日常生活・自立</strong></div>
-    <label><input type="checkbox"> 着替え・食事・排泄の自立が難しい</label><br>
-    <label><input type="checkbox"> 手順やルールの理解が弱い</label><br>
-    <label><input type="checkbox"> 生活リズムが乱れている</label><br>
-    <label><input type="checkbox"> 名前を呼んでも反応しないことがある</label><br>
-    <label><input type="checkbox"> 学校・園での集団生活が困難</label><br>
+    <div class="section">
+        <h2>5. 進捗トラッキング</h2>
+        <p>これまでのケアの進捗を確認しよう！</p>
+        <button onclick="showProgress()">進捗を見る</button>
+        <div id="progress"></div>
+    </div>
 
-    <button type="button" onclick="analyze()">結果を表示</button>
-  </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        let moodData = JSON.parse(localStorage.getItem('moodData')) || [];
+        let relaxLog = JSON.parse(localStorage.getItem('relaxLog')) || [];
+        let diaryData = JSON.parse(localStorage.getItem('diaryData')) || [];
+        let chatMessages = [];
+        const relaxAudio = {
+            deep: 'https://example.com/chaga_deep_breath.mp3',
+            muscle: 'https://example.com/chaga_muscle_relax.mp3'
+        };
 
-  <div id="result" class="result" style="display:none;"></div>
+        function checkMood() {
+            const q1 = parseInt(document.querySelector('input[name="q1"]:checked')?.value || 0);
+            const q2 = parseInt(document.querySelector('input[name="q2"]:checked')?.value || 0);
+            const q3 = parseInt(document.querySelector('input[name="q3"]:checked')?.value || 0);
+            const stress = Array.from(document.querySelectorAll('input[name="stress"]:checked')).map(cb => cb.value);
+            const score = q1 + q2 + q3;
+            moodData.push({ date: new Date().toLocaleDateString(), score, stress });
+            localStorage.setItem('moodData', JSON.stringify(moodData));
+            let message = '';
+            if (score >= 4) {
+                message = 'CHAGA: よく頑張ったね！元気いっぱい！';
+            } else if (score >= 2) {
+                message = 'CHAGA: 少し疲れてるかな？リラックスしよう！';
+            } else {
+                message = 'CHAGA: 大変だったね。一緒にケアしようね！';
+            }
+            document.getElementById('result').innerHTML = `<p>${message} (スコア: ${score}/6)<br>ストレス要因: ${stress.join(', ') || 'なし'}</p>`;
+            updateMoodChart();
+        }
 
-  <script>
-    function analyze() {
-      const checks = document.querySelectorAll('input[type="checkbox"]');
-      let score = 0;
-      checks.forEach(c => { if (c.checked) score++; });
+        function updateMoodChart() {
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: moodData.map(d => d.date),
+                    datasets: [{
+                        label: '気分スコア',
+                        data: moodData.map(d => d.score),
+                        borderColor: '#4a90e2',
+                        fill: false
+                    }]
+                },
+                options: { scales: { y: { min: 0, max: 6 } } }
+            });
+        }
 
-      const result = document.getElementById("result");
-      result.style.display = "block";
+        function playRelax(type) {
+            const audio = document.getElementById('relaxAudio');
+            audio.src = relaxAudio[type];
+            audio.classList.remove('hidden');
+            document.getElementById('logButton').classList.remove('hidden');
+            audio.play();
+            document.getElementById('relax').innerHTML = `CHAGA: ${type === 'deep' ? '5秒吸って、5秒吐いてね！' : '手から力を抜いてリラックスしてね！'}`;
+            audio.onended = () => {
+                document.getElementById('relax').innerHTML = 'CHAGA: よく頑張ったね！';
+                document.getElementById('logButton').classList.add('hidden');
+            };
+        }
 
-      if (score >= 20) {
-        result.innerHTML = "<strong>【高い特性傾向】</strong><br>発達支援・専門機関との連携が強く推奨されます。<br><br><u>支援提案</u><br>・児童発達支援・通級・専門医療の受診<br>・構造化支援、視覚的支援<br>・個別支援計画（IEP）作成";
-      } else if (score >= 13) {
-        result.innerHTML = "<strong>【中程度の傾向】</strong><br>日常での困りごとが多く、支援が必要です。<br><br><u>支援提案</u><br>・環境調整、スモールステップ支援<br>・支援級や通級の検討<br>・保健室・個別対応活用";
-      } else if (score >= 6) {
-        result.innerHTML = "<strong>【軽度の傾向】</strong><br>一部に困りごとが見られます。<br><br><u>支援提案</u><br>・共感的対応と見通しの提供<br>・安心できる人との関係づくり<br>・家庭・園での柔軟な支援";
-      } else {
-        result.innerHTML = "<strong>【特性傾向は低い】</strong><br>今のところ大きな特性傾向は見られません。<br><br>気になることがあれば、今後も見守りや相談をおすすめします。";
-      }
-    }
-  </script>
+        function logRelax() {
+            const type = document.getElementById('relaxAudio').src.includes('deep') ? '深呼吸' : '筋弛緩';
+            relaxLog.push({ date: new Date().toLocaleDateString(), type });
+            localStorage.setItem('relaxLog', JSON.stringify(relaxLog));
+            document.getElementById('relax').innerHTML += '<br>CHAGA: 進捗を記録したよ！';
+        }
+
+        function sendChat() {
+            const message = document.getElementById('chatInput').value.trim();
+            if (message) {
+                chatMessages.push(`あなた: ${message}`);
+                document.getElementById('chat').innerHTML = chatMessages.join('<br>');
+                document.getElementById('chatInput').value = '';
+                // ボランティアが後で返信（仮実装）
+                setTimeout(() => {
+                    chatMessages.push('CHAGA: ありがとう。少し休んでね。後でまた話そう！');
+                    document.getElementById('chat').innerHTML = chatMessages.join('<br>');
+                    // Discord経由でボランティアに通知（仮実装）
+                    console.log(`新着相談: ${message}`);
+                }, 1000);
+            }
+        }
+
+        function saveDiary() {
+            const diary = document.getElementById('diaryInput').value.trim();
+            if (diary) {
+                const lines = diary.split('\n').map(line => line.trim()).filter(line => line);
+                if (lines.length >= 3) {
+                    diaryData.push({ date: new Date().toLocaleDateString(), content: lines });
+                    localStorage.setItem('diaryData', JSON.stringify(diaryData));
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    doc.text('3行日記', 20, 20);
+                    doc.text(lines.map((line, i) => `${i + 1}. ${line}`).join('\n'), 20, 30);
+                    doc.save(`chaga_diary_${new Date().toLocaleDateString()}.pdf`);
+                    document.getElementById('diary').innerHTML = 'CHAGA: 日記を保存したよ！';
+                } else {
+                    document.getElementById('diary').innerHTML = 'CHAGA: 3行以上書いてね！';
+                }
+            }
+        }
+
+        function showDiaryGraph() {
+            const ctx = document.getElementById('diaryChart').getContext('2d');
+            document.getElementById('diaryChart').classList.remove('hidden');
+            const positive = diaryData.filter(d => d.content[0].includes('良かった')).length;
+            const negative = diaryData.filter(d => d.content[1].includes('大変')).length;
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['良かった日', '大変な日'],
+                    datasets: [{
+                        label: '日記傾向',
+                        data: [positive, negative],
+                        backgroundColor: ['#4a90e2', '#ff6f61']
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function showProgress() {
+            const totalChecks = moodData.length;
+            const totalRelax = relaxLog.length;
+            const totalDiaries = diaryData.length;
+            document.getElementById('progress').innerHTML = `
+                <p>CHAGA: あなたの進捗だよ！</p>
+                <p>気持ちチェック: ${totalChecks}回</p>
+                <p>リラクゼーション: ${totalRelax}回</p>
+                <p>3行日記: ${totalDiaries}回</p>
+            `;
+        }
+    </script>
 </body>
 </html>
